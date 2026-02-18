@@ -97,7 +97,7 @@ This server handles the secure login with Dexcom. It needs to be running for the
        "dexcom": {
          "command": "node",
          "args": [
-           "[path-to-your-project]/dexcom-mcp/mcp-server/build/index.js"
+           "[path-to-your-project]/dexcom-api-oauth-mcp/mcp-server/build/index.js"
          ],
          "env": {
            "OAUTH_SERVER_URL": "http://localhost:3001"

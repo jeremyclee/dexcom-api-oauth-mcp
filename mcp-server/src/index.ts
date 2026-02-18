@@ -15,7 +15,7 @@ import { oauthClient } from './oauth-client.js';
 // Create MCP server instance
 const server = new Server(
   {
-    name: 'dexcom-mcp-server',
+    name: 'dexcom-api-oauth-mcp',
     version: '1.0.0',
   },
   {
