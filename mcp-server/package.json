@@ -1,0 +1,21 @@
+{
+  "name": "dexcom-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for Dexcom glucose data",
+  "main": "build/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc && node -e \"import('fs').then(fs => fs.default.chmodSync('build/index.js', '755'))\"",
+    "dev": "tsx src/index.ts",
+    "inspector": "npx @modelcontextprotocol/inspector build/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "axios": "^1.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "typescript": "^5.3.3",
+    "tsx": "^4.7.0"
+  }
+}
