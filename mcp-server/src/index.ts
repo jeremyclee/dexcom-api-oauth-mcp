@@ -11,6 +11,9 @@ import {
 import { RESOURCES, handleResourceRead } from './resources.js';
 import { TOOLS, handleToolCall } from './tools.js';
 import { oauthClient } from './oauth-client.js';
+import { startHttpServer } from './http-server.js';
+
+const MCP_TRANSPORT = process.env.MCP_TRANSPORT || 'stdio';
 
 // Create MCP server instance
 const server = new Server(
@@ -105,13 +108,15 @@ async function main() {
     console.error('   Make sure the OAuth server is running');
   }
 
-  // Create stdio transport
-  const transport = new StdioServerTransport();
-  
-  // Connect server to transport
-  await server.connect(transport);
-  
-  console.error('🚀 Dexcom MCP Server running on stdio');
+  if (MCP_TRANSPORT === 'http') {
+    // HTTP mode: expose MCP over Streamable HTTP (for ChatGPT via ngrok)
+    await startHttpServer();
+  } else {
+    // stdio mode (default): used by Claude Desktop
+    const transport = new StdioServerTransport();
+    await server.connect(transport);
+    console.error('🚀 Dexcom MCP Server running on stdio');
+  }
 }
 
 main().catch((error) => {

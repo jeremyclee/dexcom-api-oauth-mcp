@@ -31,7 +31,7 @@ You need a developer account to access your own Dexcom data.
 
    ```bash
    # Navigate to your project folder
-   cd [path-to-your-project]/dexcom-mcp
+   cd [path-to-your-project]/dexcom-api-oauth-mcp
    
    # Install dependencies for the OAuth Server
    cd oauth-server
@@ -52,7 +52,7 @@ You need a developer account to access your own Dexcom data.
 
 1. Open the configuration file you just created:
    ```bash
-   open [path-to-your-project]/dexcom-mcp/oauth-server/.env
+   open [path-to-your-project]/dexcom-api-oauth-mcp/oauth-server/.env
    ```
 2. It will open in TextEdit. Look for these lines:
    ```
@@ -68,7 +68,7 @@ This server handles the secure login with Dexcom. It needs to be running for the
 
 1. In your Terminal, run:
    ```bash
-   cd [path-to-your-project]/dexcom-mcp/oauth-server
+   cd [path-to-your-project]/dexcom-api-oauth-mcp/oauth-server
    npm run dev
    ```
 2. You should see a message saying `🚀 Dexcom OAuth Server` is running.
@@ -129,5 +129,58 @@ This server handles the secure login with Dexcom. It needs to be running for the
      - **Europe/Canada/International:** `DEXCOM_ENV=production_eu`
      - **Japan:** `DEXCOM_ENV=production_jp`
   3. This will automatically switch the API URL to the correct region.
-  4. Restart the OAuth Server (Control+C to stop, then `npm run dev` to start).
-  5. Authenticate again (Step 5).
+  3. Restart the OAuth Server (Control+C to stop, then `npm run dev` to start).
+  4. Authenticate again (Step 5).
+
+## Use with ChatGPT
+
+> [!NOTE]
+> Connecting ChatGPT to custom MCP servers requires a **paid ChatGPT plan** (Plus, Pro, or Team) with the developer connector feature enabled.
+
+ChatGPT cannot connect to a locally running MCP server directly — it needs a **public URL**. [ngrok](https://ngrok.com) creates a secure tunnel from a public URL to your local machine.
+
+### Step A: Install ngrok
+
+1. Go to [ngrok.com](https://ngrok.com) and create a free account.
+2. Install ngrok via npm (or use `npx ngrok`):
+   ```bash
+   npm install -g ngrok
+   ```
+3. Authenticate ngrok with your account token (shown in the ngrok dashboard):
+   ```bash
+   ngrok config add-authtoken YOUR_NGROK_TOKEN
+   ```
+
+### Step B: Start the Servers
+
+1. Make sure the **OAuth Server** is running **and you have authenticated with Dexcom** (Steps 4 and 5 above). The server must be running and your Dexcom session active before continuing.
+2. In a new Terminal, start the MCP server in **HTTP mode**:
+   ```bash
+   cd [path-to-your-project]/dexcom-api-oauth-mcp/mcp-server
+   npm run dev:http
+   ```
+   You should see: `🚀 Dexcom MCP HTTP Server running on port 3002`
+
+### Step C: Expose with ngrok
+
+1. In another new Terminal window, run:
+   ```bash
+   ngrok http 3002
+   ```
+2. ngrok will display a public URL like:
+   ```
+   Forwarding  https://abc123.ngrok-free.app -> http://localhost:3002
+   ```
+3. Copy the `https://...ngrok-free.app` URL — you'll need it in the next step.
+
+### Step D: Connect to ChatGPT
+
+1. In ChatGPT, go to **Settings → Apps → Create App**.
+2. Under the MCP server configuration, enter:
+   - **URL**: `https://abc123.ngrok-free.app/mcp` (your ngrok URL + `/mcp`)
+   - **Authentication**: `No Auth`
+3. ChatGPT will connect and discover the available Dexcom tools.
+4. Ask ChatGPT: *"What is my current glucose level?"*
+
+> [!NOTE]
+> The ngrok URL changes every time you restart ngrok (on the free plan). You'll need to update the ChatGPT connector URL each session. A paid ngrok plan gives you a stable custom domain.
